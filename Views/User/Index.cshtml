@@ -1,0 +1,175 @@
+﻿@model List<sof1_IIPA26.Dtos.UserDto>
+
+@{
+    ViewData["Title"] = "Dashboard - Gestión de Usuarios";
+    var usuarioLoggado = Context.Session.GetString("Usuario");
+}
+
+@if (string.IsNullOrEmpty(usuarioLoggado))
+{
+    <script>
+        window.location.href = '@Url.Action("Login", "User")';
+    </script>
+}
+
+<div class="container-fluid mt-5">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-md-9">
+            <h2 class="mb-0">
+                <i class="bi bi-people"></i> Gestión de Usuarios
+            </h2>
+            <p class="text-muted">Bienvenido: <strong>@usuarioLoggado</strong></p>
+        </div>
+        <div class="col-md-3 text-end">
+            <a href="@Url.Action("Logout", "User")" class="btn btn-danger">
+                <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+            </a>
+        </div>
+    </div>
+
+    <!-- Estadísticas -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center shadow-sm">
+                <div class="card-body">
+                    <h6 class="card-title text-muted">Total de Usuarios</h6>
+                    <h2 class="text-primary">@(Model?.Count ?? 0)</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center shadow-sm">
+                <div class="card-body">
+                    <h6 class="card-title text-muted">Usuarios Activos</h6>
+                    <h2 class="text-success">@(Model?.Count(u => u.State == "Activo") ?? 0)</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center shadow-sm">
+                <div class="card-body">
+                    <h6 class="card-title text-muted">Usuarios Inactivos</h6>
+                    <h2 class="text-warning">@(Model?.Count(u => u.State != "Activo") ?? 0)</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center shadow-sm">
+                <div class="card-body">
+                    <h6 class="card-title text-muted">Administradores</h6>
+                    <h2 class="text-danger">@(Model?.Count(u => u.Role == "Administrador") ?? 0)</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de Usuarios -->
+    <div class="card shadow">
+        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Usuarios Registrados</h5>
+            <div class="d-flex gap-2 align-items-center">
+                <label for="recordsPerPage" class="form-label mb-0">Registros por página:</label>
+                <select id="recordsPerPage" class="form-select form-select-sm" style="width: auto;">
+                    <option value="5" selected>5</option>
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                </select>
+            </div>
+        </div>
+        <div class="card-body">
+            @if (Model != null && Model.Count > 0)
+            {
+                <!-- Filtros por columna -->
+                <div class="row mb-3">
+                    <div class="col-md-2">
+                        <input type="text" id="filterNombre" class="form-control form-control-sm" placeholder="Filtrar por nombre...">
+                    </div>
+                    <div class="col-md-2">
+                        <input type="text" id="filterUsuario" class="form-control form-control-sm" placeholder="Filtrar por usuario...">
+                    </div>
+                    <div class="col-md-2">
+                        <input type="text" id="filterRol" class="form-control form-control-sm" placeholder="Filtrar por rol...">
+                    </div>
+                    <div class="col-md-2">
+                        <input type="text" id="filterEstado" class="form-control form-control-sm" placeholder="Filtrar por estado...">
+                    </div>
+                    <div class="col-md-2">
+                        <button id="btnLimpiarFiltros" class="btn btn-secondary btn-sm w-100">Limpiar Filtros</button>
+                    </div>
+                    <div class="col-md-2">
+                        <span id="resultadosCount" class="text-muted">Total: <strong>@Model.Count</strong></span>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table id="usuariosTable" class="table table-hover table-striped">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>#ID</th>
+                                <th>Nombre</th>
+                                <th>Usuario</th>
+                                <th>Rol</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usuariosTableBody">
+                            <!-- Se llena con JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Paginación -->
+                <nav aria-label="Paginación" class="mt-3">
+                    <ul id="pagination" class="pagination justify-content-center" style="display: none;">
+                        <!-- Se genera con JavaScript -->
+                    </ul>
+                </nav>
+
+                <div class="text-center mt-3" id="paginationInfo">
+                    <small class="text-muted">Mostrando <strong id="startRecord">0</strong> a <strong id="endRecord">0</strong> de <strong id="totalRecords">0</strong> registros</small>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info text-center" role="alert">
+                    <i class="bi bi-info-circle"></i> No hay usuarios registrados aún.
+                    <a href="@Url.Action("Create", "User")" class="alert-link">Crear primer usuario</a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    .table-hover tbody tr:hover {
+        background-color: #f5f5f5;
+    }
+
+    .badge {
+        padding: 0.5em 0.75em;
+    }
+
+    .pagination .page-link {
+        cursor: pointer;
+    }
+
+    .pagination .page-item.active .page-link {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+    }
+
+    .pagination .page-item.disabled .page-link {
+        cursor: not-allowed;
+        opacity: 0.5;
+    }
+</style>
+
+@section Scripts {
+    <script src="~/js/usuarios-tabla.js"></script>
+    <script>
+        // Pasar datos de usuarios al script con propertyNameCaseInsensitive
+        var usuariosData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model, new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true, PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase }));
+    </script>
+}

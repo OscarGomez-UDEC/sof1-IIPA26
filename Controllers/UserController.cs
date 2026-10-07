@@ -1,83 +1,121 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using sof1_IIPA26.Dtos;
+using sof1_IIPA26.Services;
 
 namespace sof1_IIPA26.Controllers
 {
     public class UserController : Controller
     {
-        // GET: UserController
-        public ActionResult Register()
+        private readonly UserService _userService;
+
+        public UserController(UserService userService)
         {
-            return View();
+            _userService = userService;
         }
 
-        // GET: UserController/Details/5
-        public ActionResult Details(int id)
+        // GET: UserController/Dashboard
+        public async Task<ActionResult> Index()
         {
-            return View();
+            var usuarios = await _userService.ObtenerUsuarios();
+            return View(usuarios);
         }
 
         // GET: UserController/Create
         public ActionResult Create()
         {
-            return View();
+            UserDto userDto = new();
+            return View(userDto);
         }
 
         // POST: UserController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public async Task<ActionResult> Create(UserDto userDto)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                // Validar que el modelo sea válido
+                if (!ModelState.IsValid)
+                {
+                    // Mostrar errores de validación
+                    var errors = ModelState.Values.SelectMany(v => v.Errors);
+                    ViewData["Mensaje"] = string.Join("; ", errors.Select(e => e.ErrorMessage));
+                    return View(userDto);
+                }
+
+                userDto = await _userService.CreateUser(userDto);
+                if (userDto.Response == 1)
+                {
+                    TempData["Mensaje"] = userDto.Message;
+                    return RedirectToAction(nameof(Login));
+                }
+                else
+                {
+                    ViewData["Mensaje"] = userDto.Message;
+                    return View(userDto);
+                }
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                ViewData["Mensaje"] = "Error al crear el usuario: " + ex.Message;
+                return View(userDto);
             }
         }
 
-        // GET: UserController/Edit/5
-        public ActionResult Edit(int id)
+        // GET: UserController/Login
+        public ActionResult Login()
         {
             return View();
         }
 
-        // POST: UserController/Edit/5
+        // POST: UserController/Login
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public async Task<ActionResult> Login(LoginDto loginDto)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                // Validar que el modelo sea válido
+                if (!ModelState.IsValid)
+                {
+                    // Mostrar errores de validación
+                    var errors = ModelState.Values.SelectMany(v => v.Errors);
+                    ViewData["Mensaje"] = string.Join("; ", errors.Select(e => e.ErrorMessage));
+                    return View(loginDto);
+                }
+
+                // Validar que no sea nulo
+                if (loginDto == null)
+                {
+                    ViewData["Mensaje"] = "Error: Los datos no se recibieron correctamente";
+                    return View();
+                }
+
+                loginDto = await _userService.InicioSesion(loginDto);
+                if (loginDto.Respuesta == 1)
+                {
+                    // Guardar en sesión
+                    HttpContext.Session.SetString("Usuario", loginDto.NombreUsuario);
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    ViewData["Mensaje"] = loginDto.Mensaje;
+                    return View(loginDto);
+                }
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                ViewData["Mensaje"] = "Error en inicio de sesión: " + ex.Message;
+                return View(loginDto ?? new LoginDto());
             }
         }
 
-        // GET: UserController/Delete/5
-        public ActionResult Delete(int id)
+        // GET: UserController/Logout
+        public ActionResult Logout()
         {
-            return View();
-        }
-
-        // POST: UserController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            HttpContext.Session.Clear();
+            return RedirectToAction("Index", "Home");
         }
     }
 }

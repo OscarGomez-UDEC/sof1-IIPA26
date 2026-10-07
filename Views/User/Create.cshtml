@@ -1,5 +1,77 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+@model sof1_IIPA26.Dtos.UserDto
+
 @{
+    ViewData["Title"] = "Registrarse";
+}
+
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h4>Crear Nueva Cuenta</h4>
+        </div>
+        <div class="auth-body">
+            @if (!string.IsNullOrEmpty(ViewData["Mensaje"]?.ToString()))
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @ViewData["Mensaje"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            <form asp-action="Create" method="post" class="needs-validation" novalidate id="formRegistro">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <!-- Nombre -->
+                <div class="mb-3">
+                    <label for="Name" class="form-label">Nombre Completo <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" 
+                           id="Name" asp-for="Name" placeholder="Juan Pérez" required>
+                    <span asp-validation-for="Name" class="invalid-feedback"></span>
+                </div>
+
+                <!-- Usuario -->
+                <div class="mb-3">
+                    <label for="Username" class="form-label">Nombre de Usuario <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" 
+                           id="Username" asp-for="Username" placeholder="juanperez" required minlength="4">
+                    <span asp-validation-for="Username" class="invalid-feedback"></span>
+                </div>
+
+                <!-- Contraseña -->
+                <div class="mb-3">
+                    <label for="Password" class="form-label">Contraseña <span class="text-danger">*</span></label>
+                    <input type="password" class="form-control" 
+                           id="Password" asp-for="Password" placeholder="Ingrese su contraseña" required minlength="6">
+                    <span asp-validation-for="Password" class="invalid-feedback"></span>
+                    <small class="text-muted d-block mt-2">Requisitos: Mínimo 6 caracteres</small>
+                </div>
+
+                <!-- Confirmar Contraseña -->
+                <div class="mb-3">
+                    <label for="ConfirmPassword" class="form-label">Confirmar Contraseña <span class="text-danger">*</span></label>
+                    <input type="password" class="form-control" 
+                           id="ConfirmPassword" placeholder="Confirme su contraseña" required>
+                    <span class="invalid-feedback" id="errorConfirmPassword">
+                        Las contraseñas no coinciden
+                    </span>
+                </div>
+
+                <!-- Botones -->
+                <div class="d-grid gap-2 auth-buttons">
+                    <button type="submit" class="btn btn-auth-primary">Crear Cuenta</button>
+                    <a href="@Url.Action("Login", "User")" class="btn btn-auth-secondary">Volver al Login</a>
+                </div>
+            </form>
+
+            <hr>
+            <p class="text-center mt-3 auth-link">
+                ¿Ya tienes cuenta? 
+                <a href="@Url.Action("Login", "User")">Inicia sesión aquí</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/validar-registro.js"></script>
 }
