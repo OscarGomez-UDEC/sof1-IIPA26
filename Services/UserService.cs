@@ -19,7 +19,7 @@ namespace sof1_IIPA26.Services
             userDto.Password = Encrypt.GetSHA256(userDto.Password);
             userDto.IdRole = 2;
             userDto.IdState = 1;
-            var result = await _userRepository.CreateUser(userDto);
+            var result = await _userRepository.CreateUserEF(userDto);
             if (result)
             {
                 userDto.Response = 1;
@@ -38,7 +38,7 @@ namespace sof1_IIPA26.Services
         {
             loginDto.Contrasena = Encrypt.GetSHA256(loginDto.Contrasena);
 
-            var userResult = await _userRepository.Login(loginDto);
+            var userResult = await _userRepository.LoginEF(loginDto);
 
             if (userResult)
             {

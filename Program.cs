@@ -1,10 +1,13 @@
+using Microsoft.EntityFrameworkCore;
 using sof1_IIPA26.Repositories;
+using sof1_IIPA26.Repositories.Models;
 using sof1_IIPA26.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddDbContext<TestContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("ConnetionString:Test")));
 builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddSession(options =>
@@ -13,6 +16,7 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
+
 
 var app = builder.Build();
 
