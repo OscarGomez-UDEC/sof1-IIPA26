@@ -85,20 +85,29 @@ function renderTable() {
             ? `<span class="badge bg-success">${usuario.state}</span>`
             : `<span class="badge bg-danger">${usuario.state}</span>`;
 
-        row.innerHTML = `
-            <td><span class="badge bg-secondary">${usuario.idUser}</span></td>
-            <td>${usuario.name}</td>
-            <td><code>${usuario.username}</code></td>
-            <td><span class="badge bg-info">${usuario.role}</span></td>
-            <td>${badgeEstado}</td>
-            <td>
+        // Determinar si el usuario actual es administrador (roleId == '1')
+        const roleId = (typeof currentRoleId !== 'undefined') ? currentRoleId : '';
+        let actionsHtml = '';
+        if (roleId === '1') {
+            actionsHtml = `
                 <button class="btn btn-sm btn-warning" data-bs-toggle="tooltip" title="Editar">
                     <i class="bi bi-pencil"></i>
                 </button>
                 <button class="btn btn-sm btn-danger" data-bs-toggle="tooltip" title="Eliminar">
                     <i class="bi bi-trash"></i>
                 </button>
-            </td>
+            `;
+        } else {
+            actionsHtml = `<button class="btn btn-sm btn-secondary" disabled title="No tiene permisos"><i class="bi bi-eye"></i></button>`;
+        }
+
+        row.innerHTML = `
+            <td><span class="badge bg-secondary">${usuario.idUser}</span></td>
+            <td>${usuario.name}</td>
+            <td><code>${usuario.username}</code></td>
+            <td><span class="badge bg-info">${usuario.role}</span></td>
+            <td>${badgeEstado}</td>
+            <td>${actionsHtml}</td>
         `;
         tbody.appendChild(row);
     });

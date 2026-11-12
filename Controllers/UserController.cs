@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using sof1_IIPA26.Dtos;
 using sof1_IIPA26.Services;
 
@@ -16,8 +17,16 @@ namespace sof1_IIPA26.Controllers
         // GET: UserController/Dashboard
         public async Task<ActionResult> Index()
         {
-            var usuarios = await _userService.ObtenerUsuarios();
+            var usuarioLoggado = HttpContext.Session.GetString("Usuario");
+            if (string.IsNullOrEmpty(usuarioLoggado))
+            {
+                return View("Login");
+            }
+            else
+            {
+                var usuarios = await _userService.ObtenerUsuarios();
             return View(usuarios);
+            }
         }
 
         // GET: UserController/Create
@@ -91,16 +100,18 @@ namespace sof1_IIPA26.Controllers
                     return View();
                 }
 
-                loginDto = await _userService.InicioSesion(loginDto);
-                if (loginDto.Respuesta == 1)
+                var userDto = await _userService.InicioSesion(loginDto);
+                if (userDto.Response == 1)
                 {
-                    // Guardar en sesión
-                    HttpContext.Session.SetString("Usuario", loginDto.NombreUsuario);
+                    // Guardar en sesión: nombre real y rol
+                    HttpContext.Session.SetString("Usuario", userDto.Name ?? userDto.Username ?? string.Empty);
+                    HttpContext.Session.SetString("RoleId", userDto.IdRole?.ToString() ?? string.Empty);
+                    HttpContext.Session.SetString("Role", userDto.Role ?? string.Empty);
                     return RedirectToAction(nameof(Index));
                 }
                 else
                 {
-                    ViewData["Mensaje"] = loginDto.Mensaje;
+                    ViewData["Mensaje"] = userDto.Message;
                     return View(loginDto);
                 }
             }

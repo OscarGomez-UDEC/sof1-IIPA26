@@ -132,23 +132,35 @@ namespace sof1_IIPA26.Repositories
 
         /// <summary>
         /// Valida login usando Entity Framework Core con LINQ
-        /// Alternativa moderna a Login (SQL directo)
+        /// Alternativa moderna a Login (SQL directo) - retorna UserDto con datos si existe
         /// </summary>
-        public async Task<Boolean> LoginEF(LoginDto loginDto)
+        public async Task<UserDto?> LoginEF(LoginDto loginDto)
         {
             try
             {
                 var user = await _testContext.Users
+                        .Include(u => u.IdRoleNavigation)
+                        .Include(u => u.IdStateNavigation)
                         .FirstOrDefaultAsync(u =>
                             u.Username == loginDto.NombreUsuario &&
                             u.Password == loginDto.Contrasena);
 
-                return user != null;
+                if (user == null) return null;
+
+                return new UserDto
+                {
+                    IdUser = user.IdUser,
+                    IdRole = user.IdRole,
+                    Role = user.IdRoleNavigation != null ? user.IdRoleNavigation.Name : string.Empty,
+                    IdState = user.IdState,
+                    State = user.IdStateNavigation != null ? user.IdStateNavigation.Name : string.Empty,
+                    Name = user.Name
+                };
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error al validar login con EF: {ex.Message}");
-                return false;
+                return null;
             }
         }
 
