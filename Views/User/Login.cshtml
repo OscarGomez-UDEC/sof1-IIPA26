@@ -1,0 +1,68 @@
+@model sof1_IIPA26.Dtos.LoginDto
+
+@{
+    ViewData["Title"] = "Iniciar Sesión";
+}
+
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h4>Iniciar Sesión</h4>
+        </div>
+        <div class="auth-body">
+            @if (!string.IsNullOrEmpty(ViewData["Mensaje"]?.ToString()))
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @ViewData["Mensaje"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            @if (!string.IsNullOrEmpty(TempData["Mensaje"]?.ToString()))
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @TempData["Mensaje"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            <form asp-action="Login" method="post" class="needs-validation" novalidate id="formLogin">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <!-- Usuario -->
+                <div class="mb-3">
+                    <label for="NombreUsuario" class="form-label">Usuario <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="NombreUsuario" 
+                           asp-for="NombreUsuario" placeholder="Ingrese su usuario" required>
+                    <span asp-validation-for="NombreUsuario" class="invalid-feedback"></span>
+                </div>
+
+                <!-- Contraseña -->
+                <div class="mb-3">
+                    <label for="Contrasena" class="form-label">Contraseña <span class="text-danger">*</span></label>
+                    <input type="password" class="form-control" id="Contrasena" 
+                           asp-for="Contrasena" placeholder="Ingrese su contraseña" required>
+                    <span asp-validation-for="Contrasena" class="invalid-feedback"></span>
+                </div>
+
+                <!-- Token antiforgery -->
+                @Html.AntiForgeryToken()
+
+                <!-- Botones -->
+                <div class="d-grid gap-2 auth-buttons">
+                    <button type="submit" class="btn btn-auth-primary">Iniciar Sesión</button>
+                </div>
+            </form>
+
+            <hr>
+            <p class="text-center mt-3 auth-link">
+                ¿No tienes cuenta? 
+                <a href="@Url.Action("Create", "User")">Crea una aquí</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/validar-login.js"></script>
+}

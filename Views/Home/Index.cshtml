@@ -1,8 +1,60 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Inicio";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<!-- Hero Section -->
+<div class="hero-section">
+    <div class="container">
+        <h1>Sistema guía para Ingeniería de Software 1 - 501</h1>
+        <p><strong>Segundo período académico (IIPA26)</strong></p>
+        <div style="margin-top: 30px;">
+            <a href="@Url.Action("Create", "User")" class="btn btn-light me-2">Crear Cuenta</a>
+            <a href="@Url.Action("Login", "User")" class="btn btn-outline-light">Iniciar Sesión</a>
+        </div>
+    </div>
+</div>
+
+<!-- Gallery Section -->
+<div class="gallery-section">
+    <div class="container">
+        <div class="row">
+            <!-- SVG 1 -->
+            <div class="col-md-4">
+                <div class="gallery-item">
+                    <img src="~/img/logo-ucundinamarca.svg" alt="Logo - SVG">
+                    <div class="gallery-label">Logo Institucional (SVG)</div>
+                </div>
+            </div>
+
+            <!-- SVG 2 -->
+            <div class="col-md-4">
+                <div class="gallery-item">
+                    <img src="~/img/institucion-educativa.svg" alt="Institución - SVG">
+                    <div class="gallery-label">Institución Educativa (SVG)</div>
+                </div>
+            </div>
+
+            <!-- Imagen Internet -->
+            <div class="col-md-4">
+                <div class="gallery-item">
+                    <img src="https://as2.ftcdn.net/v2/jpg/08/86/49/53/1000_F_886495385_XudXZcfZb7FqTwSWpDjwOEWfsol6Sw6e.jpg" alt="Educación Digital">
+                    <div class="gallery-label">Educación Digital (Internet)</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer Info -->
+<div class="footer-info">
+    <div class="container">
+        <h4 style="color: #003D2E; margin-bottom: 15px;">Universidad de Cundinamarca</h4>
+        <p style="color: #666; margin-bottom: 10px;">
+            Sistema guía para Ingeniería de Software 1 - 501 <br>
+            Desarrollado con ASP.NET Core .NET 9 y Bootstrap
+        </p>
+        <p style="color: #999; font-size: 0.9rem;">
+            <i class="bi bi-c-circle"></i> 2026 - Todos los derechos reservados
+        </p>
+    </div>
 </div>

@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using sof1_IIPA26.Repositories.Models;
 using System.Diagnostics;
 
 namespace sof1_IIPA26.Controllers
@@ -21,12 +20,6 @@ namespace sof1_IIPA26.Controllers
         public IActionResult Privacy()
         {
             return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }
