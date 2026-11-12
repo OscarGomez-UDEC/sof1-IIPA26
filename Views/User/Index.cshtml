@@ -3,13 +3,7 @@
 @{
     ViewData["Title"] = "Dashboard - Gestión de Usuarios";
     var usuarioLoggado = Context.Session.GetString("Usuario");
-}
-
-@if (string.IsNullOrEmpty(usuarioLoggado))
-{
-    <script>
-        window.location.href = '@Url.Action("Login", "User")';
-    </script>
+    var roleId = Context.Session.GetString("RoleId");
 }
 
 <div class="container-fluid mt-5">
@@ -22,6 +16,12 @@
             <p class="text-muted">Bienvenido: <strong>@usuarioLoggado</strong></p>
         </div>
         <div class="col-md-3 text-end">
+            @if (roleId == "1")
+            {
+                <a href="@Url.Action("Create", "User")" class="btn btn-primary me-2">
+                    <i class="bi bi-person-plus"></i> Crear Usuario
+                </a>
+            }
             <a href="@Url.Action("Logout", "User")" class="btn btn-danger">
                 <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
             </a>
@@ -131,11 +131,14 @@
                     <small class="text-muted">Mostrando <strong id="startRecord">0</strong> a <strong id="endRecord">0</strong> de <strong id="totalRecords">0</strong> registros</small>
                 </div>
             }
-            else
+                else
             {
                 <div class="alert alert-info text-center" role="alert">
                     <i class="bi bi-info-circle"></i> No hay usuarios registrados aún.
-                    <a href="@Url.Action("Create", "User")" class="alert-link">Crear primer usuario</a>
+                    @if (roleId == "1")
+                    {
+                        <a href="@Url.Action("Create", "User")" class="alert-link">Crear primer usuario</a>
+                    }
                 </div>
             }
         </div>
@@ -171,5 +174,6 @@
     <script>
         // Pasar datos de usuarios al script con propertyNameCaseInsensitive
         var usuariosData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model, new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true, PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase }));
+        var currentRoleId = '@(Context.Session.GetString("RoleId") ?? "")';
     </script>
 }
